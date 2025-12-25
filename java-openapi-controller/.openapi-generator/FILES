@@ -1,0 +1,6 @@
+README.md
+src/main/java/org/org/numb/openapi/generator/gen/delegate/ApiUtil.java
+src/main/java/org/org/numb/openapi/generator/gen/delegate/CurlApi.java
+src/main/java/org/org/numb/openapi/generator/gen/delegate/PingApi.java
+src/main/java/org/org/numb/openapi/generator/gen/model/SimpleOneOf.java
+src/main/java/org/org/numb/openapi/generator/gen/model/SomeObj.java

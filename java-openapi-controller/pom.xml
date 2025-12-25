@@ -1,0 +1,132 @@
+<project xmlns="http://maven.apache.org/POM/4.0.0" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+         xsi:schemaLocation="http://maven.apache.org/POM/4.0.0 http://maven.apache.org/xsd/maven-4.0.0.xsd">
+    <modelVersion>4.0.0</modelVersion>
+    <parent>
+        <groupId>org.example</groupId>
+        <artifactId>java-openapi-generator</artifactId>
+        <version>1.0-SNAPSHOT</version>
+    </parent>
+
+    <artifactId>java-openapi-controller</artifactId>
+    <packaging>jar</packaging>
+
+    <name>java-openapi-controller</name>
+
+
+    <properties>
+        <project.build.sourceEncoding>UTF-8</project.build.sourceEncoding>
+    </properties>
+
+    <dependencies>
+        <dependency>
+            <groupId>org.springframework.boot</groupId>
+            <artifactId>spring-boot-starter-web</artifactId>
+        </dependency>
+        <dependency>
+            <groupId>org.springframework.data</groupId>
+            <artifactId>spring-data-commons</artifactId>
+        </dependency>
+        <!--SpringDoc dependencies -->
+        <dependency>
+            <groupId>org.springdoc</groupId>
+            <artifactId>springdoc-openapi-starter-webmvc-ui</artifactId>
+        </dependency>
+        <dependency>
+            <groupId>com.fasterxml.jackson.dataformat</groupId>
+            <artifactId>jackson-dataformat-yaml</artifactId>
+            <exclusions>
+                <exclusion>
+                    <artifactId>snakeyaml</artifactId>
+                    <groupId>org.yaml</groupId>
+                </exclusion>
+            </exclusions>
+        </dependency>
+        <dependency>
+            <groupId>com.fasterxml.jackson.datatype</groupId>
+            <artifactId>jackson-datatype-jsr310</artifactId>
+        </dependency>
+        <!-- Bean Validation API support -->
+        <dependency>
+            <groupId>org.springframework.boot</groupId>
+            <artifactId>spring-boot-starter-validation</artifactId>
+        </dependency>
+        <dependency>
+            <groupId>org.springframework.boot</groupId>
+            <artifactId>spring-boot-starter-test</artifactId>
+            <scope>test</scope>
+            <exclusions>
+                <exclusion>
+                    <artifactId>jakarta.xml.bind-api</artifactId>
+                    <groupId>jakarta.xml.bind</groupId>
+                </exclusion>
+            </exclusions>
+        </dependency>
+        <dependency>
+            <groupId>org.openapitools</groupId>
+            <artifactId>jackson-databind-nullable</artifactId>
+        </dependency>
+    </dependencies>
+    <build>
+        <plugins>
+            <plugin>
+                <groupId>org.apache.maven.plugins</groupId>
+                <artifactId>maven-clean-plugin</artifactId>
+                <configuration>
+                    <filesets>
+                        <fileset>
+                            <directory>${project.basedir}/src/main/java/org/org/numb/openapi/generator/gen</directory>
+                        </fileset>
+                    </filesets>
+                </configuration>
+            </plugin>
+            <plugin>
+                <groupId>org.openapitools</groupId>
+                <artifactId>openapi-generator-maven-plugin</artifactId>
+                <!-- RELEASE_VERSION -->
+                <version>${openapi-generator-maven-plugin.version}</version>
+                <executions>
+                    <execution>
+                        <id>generate-controller</id>
+                        <phase>generate-resources</phase>
+                        <goals>
+                            <goal>generate</goal>
+                        </goals>
+                        <configuration>
+                            <!-- 1. 关键配置：OpenAPI 规范文件（本地路径或 URL） -->
+                            <inputSpec>${project.basedir}/src/main/resources/openapi/v1/openapi.yaml</inputSpec>
+                            <!-- 或从远程 API 获取规范：<inputSpec>http://localhost:8080/v3/api-docs</inputSpec> -->
+
+                            <!-- 2. 生成代码目标语言（必填，支持 50+ 语言，小写） -->
+                            <!-- 常用语言：java、python、go、typescript-axios、php、csharp 等 -->
+                            <generatorName>spring</generatorName>
+                            <library>spring-boot</library>
+                            <!-- 3. 输出目录（生成的代码存放位置，默认 src/main/java） -->
+                            <output>${project.basedir}</output>
+                            <!-- 4. 包配置（Java 语言专属，指定生成代码的包名） -->
+                            <packageName>org.org.numb.openapi.generator.gen</packageName> <!-- 根包名 -->
+                            <apiPackage>org.org.numb.openapi.generator.gen.delegate</apiPackage> <!-- API 操作类包名 -->
+                            <modelPackage>org.org.numb.openapi.generator.gen.model</modelPackage> <!-- 数据模型包名 -->
+                            <!-- 5. 额外配置（可选，根据语言自定义） -->
+                            <generateModelTests>false</generateModelTests> <!-- 不生成模型测试代码 -->
+                            <generateApiTests>false</generateApiTests> <!-- 不生成API测试代码 -->
+                            <openapiGeneratorIgnoreList>pom.xml</openapiGeneratorIgnoreList>
+
+                            <configOptions>
+                                <interfaceOnly>true</interfaceOnly>
+                                <dateLibrary>java21</dateLibrary> <!-- 日期处理用 Java8 LocalDate -->
+                                <useJakartaEe>true</useJakartaEe> <!-- 是否使用 Jakarta EE（默认 false，用 Java EE） -->
+                                <useBeanValidation>true</useBeanValidation>
+                                <delegatePattern>true</delegatePattern>
+                                <useSpringController>false</useSpringController>
+                                <useOneOfInterfaces>true</useOneOfInterfaces>
+                                <useDeductionForOneOfInterfaces>true</useDeductionForOneOfInterfaces>
+                            </configOptions>
+                            <!-- 6. 忽略已存在的文件（避免覆盖手动修改的代码，可选） -->
+                            <ignoreFileOverride>${project.basedir}/</ignoreFileOverride>
+                        </configuration>
+                    </execution>
+                </executions>
+            </plugin>
+        </plugins>
+    </build>
+</project>
