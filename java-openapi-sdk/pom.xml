@@ -35,4 +35,67 @@
             <artifactId>jackson-datatype-jsr310</artifactId>
         </dependency>
     </dependencies>
+    <build>
+        <plugins>
+            <plugin>
+                <groupId>org.apache.maven.plugins</groupId>
+                <artifactId>maven-clean-plugin</artifactId>
+                <configuration>
+                    <filesets>
+                        <fileset>
+                            <directory>${project.basedir}/src/main/java/org/org/numb/openapi/generator/gen</directory>
+                        </fileset>
+                    </filesets>
+                </configuration>
+            </plugin>
+            <plugin>
+                <groupId>org.openapitools</groupId>
+                <artifactId>openapi-generator-maven-plugin</artifactId>
+                <!-- RELEASE_VERSION -->
+                <version>${openapi-generator-maven-plugin.version}</version>
+                <executions>
+                    <execution>
+                        <id>generate-feign-sdk</id>
+                        <phase>generate-resources</phase>
+                        <goals>
+                            <goal>generate</goal>
+                        </goals>
+                        <configuration>
+                            <!-- 1. 关键配置：OpenAPI 规范文件（本地路径或 URL） -->
+                            <inputSpec>${project.basedir}/java-openapi-controller/src/main/resources/openapi/v1/openapi.yaml</inputSpec>
+                            <!-- 或从远程 API 获取规范：<inputSpec>http://localhost:8080/v3/api-docs</inputSpec> -->
+
+                            <!-- 2. 生成代码目标语言（必填，支持 50+ 语言，小写） -->
+                            <!-- 常用语言：java、python、go、typescript-axios、php、csharp 等 -->
+                            <generatorName>spring</generatorName>
+                            <library>spring-cloud</library>
+                            <!-- 3. 输出目录（生成的代码存放位置，默认 src/main/java） -->
+                            <output>${project.basedir}</output>
+                            <!-- 4. 包配置（Java 语言专属，指定生成代码的包名） -->
+                            <packageName>org.numb.openapi.generator.sdk.feign.gen</packageName> <!-- 根包名 -->
+                            <apiPackage>org.numb.openapi.generator.sdk.feign.gen.delegate</apiPackage> <!-- API 操作类包名 -->
+                            <modelPackage>org.numb.openapi.generator.sdk.feign.gen.model</modelPackage> <!-- 数据模型包名 -->
+                            <!-- 5. 额外配置（可选，根据语言自定义） -->
+                            <generateModelTests>false</generateModelTests> <!-- 不生成模型测试代码 -->
+                            <generateApiTests>false</generateApiTests> <!-- 不生成API测试代码 -->
+                            <openapiGeneratorIgnoreList>pom.xml</openapiGeneratorIgnoreList>
+
+                            <configOptions>
+                                <interfaceOnly>true</interfaceOnly>
+                                <dateLibrary>java21</dateLibrary> <!-- 日期处理用 Java8 LocalDate -->
+                                <useJakartaEe>true</useJakartaEe> <!-- 是否使用 Jakarta EE（默认 false，用 Java EE） -->
+                                <useBeanValidation>true</useBeanValidation>
+                                <delegatePattern>true</delegatePattern>
+                                <useSpringController>true</useSpringController>
+                                <useOneOfInterfaces>true</useOneOfInterfaces>
+                                <useDeductionForOneOfInterfaces>true</useDeductionForOneOfInterfaces>
+                            </configOptions>
+                            <!-- 6. 忽略已存在的文件（避免覆盖手动修改的代码，可选） -->
+                            <ignoreFileOverride>${project.basedir}/</ignoreFileOverride>
+                        </configuration>
+                    </execution>
+                </executions>
+            </plugin>
+        </plugins>
+    </build>
 </project>
