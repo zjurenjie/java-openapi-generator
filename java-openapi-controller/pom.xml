@@ -117,7 +117,7 @@
                                 <useJakartaEe>true</useJakartaEe> <!-- 是否使用 Jakarta EE（默认 false，用 Java EE） -->
                                 <useBeanValidation>true</useBeanValidation>
                                 <delegatePattern>true</delegatePattern>
-                                <useSpringController>false</useSpringController>
+                                <useSpringController>true</useSpringController>
                                 <useOneOfInterfaces>true</useOneOfInterfaces>
                                 <useDeductionForOneOfInterfaces>true</useDeductionForOneOfInterfaces>
                             </configOptions>
