@@ -304,6 +304,7 @@ https://github.com/OpenAPITools/openapi-generator/blob/master/modules/openapi-ge
 - `useBeanValidation`：是否开启bean校验
 - `delegatePattern`：是否使用代理模式生成服务端代码
 - `useSpringController`：是否在生成的接口使用spring的`@Controller`注解，建议开启
+- `useOneOfInterfaces`：用于控制是否生成oneOf互斥模型的接口，为true则只生成接口，否则会生成`hashcode`、`equals`等方法
 
 spring服务端更多配置参考：
 
@@ -312,6 +313,112 @@ https://openapi-generator.tech/docs/generators/spring/#config-options
 客户端配置与服务端配置不同，可根据生成代码需求按照generator类型分类查找
 
 https://openapi-generator.tech/docs/generators/
+
+## 使用maven插件生成客户端代码
+
+### 生成spring-cloud-feign的客户端代码
+
+这里为了保证服务端与客户端使用同一份yaml接口文件，在`java-openapi-sdk`工程中配置使用了`java-openapi-controller`的接口文件路径。工程中配置如下：使用`maven-clean-plugin`插件自动清理生成的文件，使用`openapi-generator-maven-plugin`生成服务端代码
+
+其中关键配置为
+
+- ` <generatorName>spring</generatorName>`
+- `<library>spring-cloud</library>`
+
+```xml
+<build>
+    <plugins>
+        <plugin>
+            <groupId>org.apache.maven.plugins</groupId>
+            <artifactId>maven-clean-plugin</artifactId>
+            <configuration>
+                <filesets>
+                    <fileset>
+                        <directory>${project.basedir}/src/main/java/org/numb/openapi/generator/sdk/feign/gen</directory>
+                    </fileset>
+                </filesets>
+            </configuration>
+        </plugin>
+        <plugin>
+            <groupId>org.openapitools</groupId>
+            <artifactId>openapi-generator-maven-plugin</artifactId>
+            <!-- RELEASE_VERSION -->
+            <version>${openapi-generator-maven-plugin.version}</version>
+            <executions>
+                <execution>
+                    <id>generate-feign-sdk</id>
+                    <phase>generate-resources</phase>
+                    <goals>
+                        <goal>generate</goal>
+                    </goals>
+                    <configuration>
+                        <!-- 1. 关键配置：OpenAPI 规范文件（本地路径或 URL） -->
+                        <inputSpec>${project.basedir}/../java-openapi-controller/src/main/resources/openapi/v1/openapi.yaml</inputSpec>
+                        <!-- 或从远程 API 获取规范：<inputSpec>http://localhost:8080/v3/api-docs</inputSpec> -->
+
+                        <!-- 2. 生成代码目标语言（必填，支持 50+ 语言，小写） -->
+                        <!-- 常用语言：java、python、go、typescript-axios、php、csharp 等 -->
+                        <generatorName>spring</generatorName>
+                        <library>spring-cloud</library>
+                        <!-- 3. 输出目录（生成的代码存放位置，默认 src/main/java） -->
+                        <output>${project.basedir}</output>
+                        <!-- 4. 包配置（Java 语言专属，指定生成代码的包名） -->
+                        <packageName>org.numb.openapi.generator.sdk.feign.gen</packageName> <!-- 根包名 -->
+                        <apiPackage>org.numb.openapi.generator.sdk.feign.gen.delegate</apiPackage> <!-- API 操作类包名 -->
+                        <modelPackage>org.numb.openapi.generator.sdk.feign.gen.model</modelPackage> <!-- 数据模型包名 -->
+                        <!-- 5. 额外配置（可选，根据语言自定义） -->
+                        <generateModelTests>false</generateModelTests> <!-- 不生成模型测试代码 -->
+                        <generateApiTests>false</generateApiTests> <!-- 不生成API测试代码 -->
+                        <generateSupportingFiles>true</generateSupportingFiles>
+                        <openapiGeneratorIgnoreList>pom.xml</openapiGeneratorIgnoreList>
+                        <configOptions>
+                            <interfaceOnly>false</interfaceOnly>
+                            <sourceFolder>src/main/java</sourceFolder> <!-- 生成代码的源码目录 -->
+                            <dateLibrary>java8</dateLibrary> <!-- 日期处理用 Java8 LocalDate -->
+                            <useJakartaEe>true</useJakartaEe> <!-- 是否使用 Jakarta EE（默认 false，用 Java EE） -->
+                            <useBeanValidation>true</useBeanValidation>
+                            <serializationLibrary>jackson</serializationLibrary>
+                            <generateClientAsBean>true</generateClientAsBean>
+                            <library>spring-cloud</library>
+                        </configOptions>
+                    </configuration>
+                </execution>
+            </executions>
+        </plugin>
+    </plugins>
+</build>
+```
+
+#### configuration常用配置
+
+- `inputSpec`：OpenAPI 规范文件（本地路径或 URL）
+- `generatorName`：生成代码目标语言，当生成spingcloudfeign客户端代码时使用`spring`，`library`必须固定为`spring-cloud`
+- `library`：固定为`spring-cloud`
+- `output`：输出目录（生成的代码存放位置，默认 src/main/java）
+- `packageName`：根包名配置（Java 语言专属，指定生成代码的包名）
+- `apiPackage`：API 操作类包名
+- `modelPackage`： 数据模型包名
+- `generateModelTests`：不生成模型测试代码
+- `generateApiTests`：不生成API测试代码
+- `openapiGeneratorIgnoreList`：不生成的文件列表，这里可以配置pom.xml，让我们可以重新定义依赖组件的版本，不由openapi-tools控制
+- `generateApiDocumentation`：是否在`docs`目录下生成 API 接口相关文档
+- `generateModelDocumentation`：生成`docs`目录下数据模型相关文档
+- `generateSupportingFiles`：生成工程支撑文件，默认开启会生成一个配置类
+
+#### configOptions常用配置
+
+- `interfaceOnly`: 只生成接口代码，不生成实现类，建议false
+- `useJakartaEe`：是否使用 Jakarta EE（默认 false，用 Java EE），使用jdk17/jdk21与springboot3.x设置为true
+- `useBeanValidation`：是否开启bean校验
+- `delegatePattern`：是否使用代理模式生成服务端代码
+
+生成效果如下：
+
+![image-20251228223000709](./assets/image-20251228223000709.png)
+
+![image-20251228223546656](./assets/image-20251228223546656.png)
+
+![image-20251228223602416](./assets/image-20251228223602416.png)
 
 
 
@@ -328,8 +435,104 @@ https://openapi-generator.tech/docs/generators/
 建议排查配置项`configOptions`的`useSpringController`是否为`true`
 
 ```xml
-<configOptions>
-    <useSpringController>false</useSpringController>
-</configOptions>
+<groupId>org.openapitools</groupId>
+<artifactId>openapi-generator-maven-plugin</artifactId>
+<version>${openapi-generator-maven-plugin.version}</version>
+<executions>
+    <execution>
+        <!--其他配置...-->
+        <configuration>
+            <!--其他配置...-->
+         	<generateApiDocumentation>false</generateApiDocumentation>
+         	<generateModelDocumentation>false</generateModelDocumentation>
+         	<generateSupportingFiles>false</generateSupportingFiles>
+            <configOptions>
+                <useSpringController>false</useSpringController>
+            </configOptions>
+        </configuration>
+    </execution>
+</executions>
+```
+
+## Q2：服务端代码生成时如何防止pom文件被覆盖
+
+可以配置`openapiGeneratorIgnoreList`为`pom.xml`防止覆盖
+
+```xml
+<groupId>org.openapitools</groupId>
+<artifactId>openapi-generator-maven-plugin</artifactId>
+<version>${openapi-generator-maven-plugin.version}</version>
+<executions>
+    <execution>
+        <!--其他配置...-->
+        <configuration>
+            <!--其他配置...-->
+            <openapiGeneratorIgnoreList>pom.xml</openapiGeneratorIgnoreList>
+            <configOptions>
+            	<!--其他配置...-->
+            </configOptions>
+        </configuration>
+    </execution>
+</executions>
+```
+
+
+
+## Q3：客户端代码生成时禁用API文档生成
+
+在客户端代码生成时同步生成了api接口文档，如何禁用？
+
+![image-20251228221018784](./assets/image-20251228221018784.png)
+
+建议排查配置项`configuration`的`generateApiDocumentation`是否为`false`。如何不想生成任何文档，建议将`generateApiDocumentation`,`generateModelDocumentation`都设置为false
+
+- `generateApiDocumentation`：是否生成 API 接口相关文档
+- `generateModelDocumentation`：生成数据模型相关文档
+
+```xml
+<groupId>org.openapitools</groupId>
+<artifactId>openapi-generator-maven-plugin</artifactId>
+<version>${openapi-generator-maven-plugin.version}</version>
+<executions>
+    <execution>
+        <!--其他配置...-->
+        <configuration>
+            <!--其他配置...-->
+         	<generateApiDocumentation>false</generateApiDocumentation>
+         	<generateModelDocumentation>false</generateModelDocumentation>
+            <configOptions>
+            <!--其他配置...-->
+            </configOptions>
+        </configuration>
+        </configuration>
+    </execution>
+</executions>
+```
+
+## Q4：客户端代码生成时禁用Gradle等生成
+
+使用maven构建时，默认生成了gradle的配置文件
+
+![](./assets/image-20251228221407360.png)
+
+建议排查配置项`configuration`的`generateSupportingFiles`设置为false，但是需要自己手动补全一些文件如`ApiClient`等
+
+```xml
+<groupId>org.openapitools</groupId>
+<artifactId>openapi-generator-maven-plugin</artifactId>
+<version>${openapi-generator-maven-plugin.version}</version>
+<executions>
+    <execution>
+        <!--其他配置...-->
+        <configuration>
+            <!--其他配置...-->
+         	<generateSupportingFiles>false</generateSupportingFiles>
+            <configOptions>
+            <!--其他配置...-->
+            </configOptions>
+        </configuration>
+        </configuration>
+    </execution>
+</executions>
 ```
 

@@ -118,7 +118,7 @@
                                 <useBeanValidation>true</useBeanValidation>
                                 <delegatePattern>true</delegatePattern>
                                 <useSpringController>true</useSpringController>
-                                <useOneOfInterfaces>true</useOneOfInterfaces>
+                                <useOneOfInterfaces>false</useOneOfInterfaces>
                                 <useDeductionForOneOfInterfaces>true</useDeductionForOneOfInterfaces>
                             </configOptions>
                             <!-- 6. 忽略已存在的文件（避免覆盖手动修改的代码，可选） -->

@@ -19,20 +19,16 @@
 
     <dependencies>
         <dependency>
-            <groupId>com.fasterxml.jackson.core</groupId>
-            <artifactId>jackson-annotations</artifactId>
+            <groupId>org.springdoc</groupId>
+            <artifactId>springdoc-openapi-starter-common</artifactId>
         </dependency>
         <dependency>
-            <groupId>com.fasterxml.jackson.core</groupId>
-            <artifactId>jackson-core</artifactId>
+            <groupId>org.springframework.cloud</groupId>
+            <artifactId>spring-cloud-starter-openfeign</artifactId>
         </dependency>
         <dependency>
-            <groupId>com.fasterxml.jackson.core</groupId>
-            <artifactId>jackson-databind</artifactId>
-        </dependency>
-        <dependency>
-            <groupId>com.fasterxml.jackson.datatype</groupId>
-            <artifactId>jackson-datatype-jsr310</artifactId>
+            <groupId>org.openapitools</groupId>
+            <artifactId>jackson-databind-nullable</artifactId>
         </dependency>
     </dependencies>
     <build>
@@ -43,7 +39,7 @@
                 <configuration>
                     <filesets>
                         <fileset>
-                            <directory>${project.basedir}/src/main/java/org/org/numb/openapi/generator/gen</directory>
+                            <directory>${project.basedir}/src/main/java/org/numb/openapi/generator/sdk/feign/gen</directory>
                         </fileset>
                     </filesets>
                 </configuration>
@@ -62,7 +58,7 @@
                         </goals>
                         <configuration>
                             <!-- 1. 关键配置：OpenAPI 规范文件（本地路径或 URL） -->
-                            <inputSpec>${project.basedir}/java-openapi-controller/src/main/resources/openapi/v1/openapi.yaml</inputSpec>
+                            <inputSpec>${project.basedir}/../java-openapi-controller/src/main/resources/openapi/v1/openapi.yaml</inputSpec>
                             <!-- 或从远程 API 获取规范：<inputSpec>http://localhost:8080/v3/api-docs</inputSpec> -->
 
                             <!-- 2. 生成代码目标语言（必填，支持 50+ 语言，小写） -->
@@ -78,20 +74,18 @@
                             <!-- 5. 额外配置（可选，根据语言自定义） -->
                             <generateModelTests>false</generateModelTests> <!-- 不生成模型测试代码 -->
                             <generateApiTests>false</generateApiTests> <!-- 不生成API测试代码 -->
+                            <generateSupportingFiles>true</generateSupportingFiles>
                             <openapiGeneratorIgnoreList>pom.xml</openapiGeneratorIgnoreList>
-
                             <configOptions>
-                                <interfaceOnly>true</interfaceOnly>
-                                <dateLibrary>java21</dateLibrary> <!-- 日期处理用 Java8 LocalDate -->
+                                <interfaceOnly>false</interfaceOnly>
+                                <sourceFolder>src/main/java</sourceFolder> <!-- 生成代码的源码目录 -->
+                                <dateLibrary>java8</dateLibrary> <!-- 日期处理用 Java8 LocalDate -->
                                 <useJakartaEe>true</useJakartaEe> <!-- 是否使用 Jakarta EE（默认 false，用 Java EE） -->
                                 <useBeanValidation>true</useBeanValidation>
-                                <delegatePattern>true</delegatePattern>
-                                <useSpringController>true</useSpringController>
-                                <useOneOfInterfaces>true</useOneOfInterfaces>
-                                <useDeductionForOneOfInterfaces>true</useDeductionForOneOfInterfaces>
+                                <serializationLibrary>jackson</serializationLibrary>
+                                <generateClientAsBean>true</generateClientAsBean>
+                                <library>spring-cloud</library>
                             </configOptions>
-                            <!-- 6. 忽略已存在的文件（避免覆盖手动修改的代码，可选） -->
-                            <ignoreFileOverride>${project.basedir}/</ignoreFileOverride>
                         </configuration>
                     </execution>
                 </executions>

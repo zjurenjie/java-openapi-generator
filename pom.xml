@@ -18,7 +18,10 @@
         <jackson.version>2.20.1</jackson.version>
         <jakarta.annotation-api.version>2.1.1</jakarta.annotation-api.version>
         <okhttp.version>4.12.0</okhttp.version>
+        <open-feign.version>13.6</open-feign.version>
         <spring-boot.version>3.4.2</spring-boot.version>
+        <spring-cloud-feign.version>4.3.0</spring-cloud-feign.version>
+        <springdoc-openapi-ui.version>2.8.4</springdoc-openapi-ui.version>
         <springdoc-openapi-ui.version>2.8.4</springdoc-openapi-ui.version>
         <openapi-generator-maven-plugin.version>7.14.0</openapi-generator-maven-plugin.version>
         <jackson-databind-nullable.version>0.2.6</jackson-databind-nullable.version>
@@ -26,6 +29,11 @@
     </properties>
     <dependencyManagement>
         <dependencies>
+            <dependency>
+                <groupId>jakarta.annotation</groupId>
+                <artifactId>jakarta.annotation-api</artifactId>
+                <version>${jakarta.annotation-api.version}</version>
+            </dependency>
             <dependency>
                 <groupId>org.springframework.data</groupId>
                 <artifactId>spring-data-commons</artifactId>
@@ -53,6 +61,16 @@
                 <version>${springdoc-openapi-ui.version}</version>
             </dependency>
             <dependency>
+                <groupId>org.springdoc</groupId>
+                <artifactId>springdoc-openapi-starter-common</artifactId>
+                <version>${springdoc-openapi-ui.version}</version>
+            </dependency>
+            <dependency>
+                <groupId>org.springframework.cloud</groupId>
+                <artifactId>spring-cloud-starter-openfeign</artifactId>
+                <version>${spring-cloud-feign.version}</version>
+            </dependency>
+            <dependency>
                 <groupId>com.fasterxml.jackson</groupId>
                 <artifactId>jackson-bom</artifactId>
                 <version>${jackson.version}</version>
@@ -74,6 +92,12 @@
                 <groupId>com.squareup.okhttp3</groupId>
                 <artifactId>logging-interceptor</artifactId>
                 <version>${okhttp.version}</version>
+            </dependency>
+
+            <dependency>
+                <groupId>io.github.openfeign</groupId>
+                <artifactId>feign-core</artifactId>
+                <version>${open-feign.version}</version>
             </dependency>
         </dependencies>
     </dependencyManagement>

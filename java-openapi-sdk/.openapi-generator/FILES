@@ -1,0 +1,9 @@
+README.md
+src/main/java/org/numb/openapi/generator/sdk/feign/gen/delegate/CurlApi.java
+src/main/java/org/numb/openapi/generator/sdk/feign/gen/delegate/CurlApiClient.java
+src/main/java/org/numb/openapi/generator/sdk/feign/gen/delegate/PingApi.java
+src/main/java/org/numb/openapi/generator/sdk/feign/gen/delegate/PingApiClient.java
+src/main/java/org/numb/openapi/generator/sdk/feign/gen/model/SimpleOneOf.java
+src/main/java/org/numb/openapi/generator/sdk/feign/gen/model/SomeObj.java
+src/main/java/org/openapitools/configuration/ApiKeyRequestInterceptor.java
+src/main/java/org/openapitools/configuration/ClientConfiguration.java
